@@ -115,12 +115,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 Glide.with(mContext).load(recommendedCompanyImage).into(mRecommendedCompanyIv);
                 //显示recycler列表
                 mRecyclerView.setAdapter(new HomeInfoListAdapter(homeDataResult.getData().getNews_list()));
-                mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext){
-                    @Override
-                    public boolean canScrollVertically() {
-                        return false;
-                    }
-                });
+                mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
             }
         });
     }
@@ -129,12 +124,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.adbanner_iv:
-                Intent intent = new Intent();
+                Intent intent = new Intent(mContext,DetailLinkActivity.class);
                 intent.putExtra(DetailLinkActivity.URL_KEY,homeDataResult.getData().getAd_list().get(0).getLink());
                 startActivity(intent);
                 break;
             case R.id.recommended_company:
-                Intent intent2 = new Intent();
+                Intent intent2 = new Intent(mContext,DetailLinkActivity.class);
                 intent2.putExtra(DetailLinkActivity.URL_KEY,homeDataResult.getData().getCompany_list().get(0).getLink());
                 startActivity(intent2);
                 break;
