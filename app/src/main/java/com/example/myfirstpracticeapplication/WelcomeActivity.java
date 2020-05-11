@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageView;
 
+import com.example.myfirstpracticeapplication.util.ActivityManageUtil;
+
 public class WelcomeActivity extends AppCompatActivity {
 
     //welcome page when launcher app
@@ -17,9 +19,16 @@ public class WelcomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
+        ActivityManageUtil.getInstance().addActivity(this);
 
         initView();
         initData();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ActivityManageUtil.getInstance().finishActivity(this);
     }
 
     private void initData() {

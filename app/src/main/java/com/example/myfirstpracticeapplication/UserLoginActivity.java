@@ -18,6 +18,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myfirstpracticeapplication.model.UserLoginResult;
+import com.example.myfirstpracticeapplication.util.ActivityManageUtil;
+import com.example.myfirstpracticeapplication.util.CommonUtil;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -41,6 +43,7 @@ public class UserLoginActivity extends AppCompatActivity implements View.OnClick
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_login);
+        ActivityManageUtil.getInstance().addActivity(this);
 
         mEtUserPhone = findViewById(R.id.user_phone_et);
         mEtUserPassword = findViewById(R.id.user_password_et);
@@ -143,5 +146,7 @@ public class UserLoginActivity extends AppCompatActivity implements View.OnClick
         }else {
             mEtUserPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
         }
+        //将密码框光标移动至最后
+        CommonUtil.cursorToEnd(mEtUserPassword);
     }
 }
