@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 import com.example.myfirstpracticeapplication.model.UserLoginResult;
 import com.example.myfirstpracticeapplication.util.ActivityManageUtil;
 import com.example.myfirstpracticeapplication.util.CommonUtil;
+import com.example.myfirstpracticeapplication.util.MD5Util;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -38,6 +40,9 @@ public class UserLoginActivity extends AppCompatActivity implements View.OnClick
     private Button mBtUserLogin;
     private TextView mTvUserRegister;
     private CheckBox mCbCheckPassword;
+
+    //Handler use for switch to main thread
+    private static Handler mHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,10 +93,10 @@ public class UserLoginActivity extends AppCompatActivity implements View.OnClick
         //2.构建请求体的body
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
         builder.addFormDataPart("appid","1");
-        builder.addFormDataPart("sms_type","3");
         builder.addFormDataPart("cell_phone",userPhone);
+        builder.addFormDataPart("password", MD5Util.strToMd5(userPassword));
 
-        final String URL = "";
+        final String URL = "http://v2.ffu365.com/index.php?m=Api&c=Member&a=login";
         //3.构建一个请求
         Request request =new Request.Builder().url(URL)
                 .post(builder.build())
@@ -106,13 +111,19 @@ public class UserLoginActivity extends AppCompatActivity implements View.OnClick
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String result = response.toString();
+                String result = response.body().string();
                 Log.d(TAG, "onResponse: "+ result);
                 Gson gson = new Gson();
-                UserLoginResult userLoginResult = gson.fromJson(result,UserLoginResult.class);
+                final UserLoginResult userLoginResult = gson.fromJson(result,UserLoginResult.class);
+                Log.d(TAG, "onResponse: user info result: " + result);
 
-                //刷新界面
-                dealLoginResult(userLoginResult);
+                //保存用户信息用于刷新界面
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        dealLoginResult(userLoginResult);
+                    }
+                });
             }
         });
     }

@@ -35,15 +35,16 @@
             android:visibility="gone"
             >
 
-            <com.example.myfirstpracticeapplication.ui.RoundImageView
+<!--            <com.example.myfirstpracticeapplication.ui.RoundImageView-->
+<!--                android:id="@+id/user_head_iv"-->
+<!--                android:src="@drawable/center_default_head"-->
+<!--                android:layout_width="80dp"-->
+<!--                android:layout_height="80dp" />-->
+            <ImageView
                 android:id="@+id/user_head_iv"
                 android:src="@drawable/center_default_head"
                 android:layout_width="80dp"
                 android:layout_height="80dp" />
-            <!--            <ImageView-->
-            <!--                android:src="@drawable/center_default_head"-->
-            <!--                android:layout_width="80dp"-->
-            <!--                android:layout_height="80dp" />-->
 
             <LinearLayout
                 android:layout_marginLeft="10dp"

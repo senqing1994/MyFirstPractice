@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.text.method.TransformationMethod;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -39,6 +40,7 @@ import okhttp3.Response;
  */
 public class UserRegisterActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
 
+    private static final String TAG = "UserRegisterActivity";
     //phone  password  verification_code
     private EditText mEtUserPhone,mEtUserPassword,mEtUserCode;
     //register button
@@ -133,7 +135,7 @@ public class UserRegisterActivity extends AppCompatActivity implements CompoundB
         builder.addFormDataPart("cell_phone",userPhone);
         builder.addFormDataPart("password",userPassword);
 
-        final String URL = "";
+        final String URL = "http://v2.ffu365.com/index.php?m=Api&c=Member&a=register";
         //3.构建请求
         Request request = new Request.Builder().url(URL)
                 .post(builder.build())
@@ -150,7 +152,8 @@ public class UserRegisterActivity extends AppCompatActivity implements CompoundB
                 String result = response.body().string();
                 Gson gson = new Gson();
                 final UserLoginResult userLoginResult = gson.fromJson(result,UserLoginResult.class);
-                //更新UI
+                Log.d(TAG, "onResponse: result "+ result);
+                //保存用户信息用于更新UI
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -198,7 +201,7 @@ public class UserRegisterActivity extends AppCompatActivity implements CompoundB
         builder.addFormDataPart("sms_type","3");
         builder.addFormDataPart("cell_phone",userPhone);
 
-        final String URL = "";
+        final String URL = "http://v2.ffu365.com/index.php?m=Api&c=Util&a=sendVerifyCode";
         Request request = new Request.Builder().url(URL)
                 .post(builder.build()).build();
 
@@ -213,6 +216,7 @@ public class UserRegisterActivity extends AppCompatActivity implements CompoundB
                 String result = response.body().string();
                 Gson gson = new Gson();
                 final UserRequestCodeResult userRequestCodeResult = gson.fromJson(result,UserRequestCodeResult.class);
+                Log.d(TAG, "onResponse: verification code : " + result);
                 //发送验证码后更新UI
                 mHandler.post(new Runnable() {
                     @Override
