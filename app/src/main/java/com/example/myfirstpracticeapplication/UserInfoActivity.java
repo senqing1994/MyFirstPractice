@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -27,10 +28,16 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 public class UserInfoActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final int ALBUM_OK = 3432;
     private static final int CUT_OK = 0x0013;
+    private static final int TAKE_PHOTO = 1;
+    private Uri imageUri;
     //用户头像
     private ImageView mIvUserLogin;
 
@@ -80,7 +87,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 dialog.dismiss();
             }
         });
-        //设置从手机选择照片的按钮点击事件
+        //从手机相册选择照片作为头像
         dialogView.findViewById(R.id.image_depot).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,6 +98,31 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                     openAlbum();
                 }
                 dialog.dismiss();
+            }
+        });
+        //开启摄像机拍照作为头像
+        dialogView.findViewById(R.id.photo_camre).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //创建File对象
+                File outputImage = new File(getExternalCacheDir(),"output_image.jpg");
+                try {
+                    if(outputImage.exists()){
+                        outputImage.delete();
+                    }
+                    outputImage.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if (Build.VERSION.SDK_INT >= 24){
+                    imageUri = FileProvider.getUriForFile(UserInfoActivity.this,"com.example.cameraalbumtest.fileprovider",outputImage);
+                }else {
+                    imageUri = Uri.fromFile(outputImage);
+                }
+                //启动相机程序
+                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+                intent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);
+                startActivityForResult(intent, TAKE_PHOTO);
             }
         });
 
@@ -130,6 +162,16 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                         handleImageOnKitKat(data);
                     }else {
                         handleImageBeforeKitKat(data);
+                    }
+                }
+                break;
+            case TAKE_PHOTO:
+                if(resultCode == RESULT_OK){
+                    try {
+                        Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+                        mIvUserLogin.setImageBitmap(bitmap);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
                     }
                 }
                 break;
